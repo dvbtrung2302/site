@@ -1,0 +1,404 @@
+---
+title: "React Hooks Under The Hood"
+description: "How useState, useEffect work behind the scenes"
+date: 2024-10-26
+---
+
+export const metadata = {
+  title: "React Hooks Under The Hood",
+  date: "2024-10-26",
+  description: "How useState, useEffect work behind the scenes",
+  alternates: {
+    canonical: '/blog/react-hook-under-the-hood'
+  }
+};
+
+import Title from '../title';
+
+<Title title={metadata.title} date={metadata.date} />
+
+## Introduction
+Hooks are a new feature introduced in **React 16.8**. They let us use React features without writing a class, allow developers to write cleaner, more reusable code.
+
+But as usual, there are many questions surrounding React Hooks. In the official React documentation, there is a specific article discussing the rules for using Hooks, which includes:
+
+- Don’t call Hooks inside loops, conditions, nested functions, or try/catch/finally blocks.
+- Only call Hooks at the top level.
+
+So, why are these rules in place? Let’s explore this issue together.
+
+## Why can't we call hooks inside loops, conditions, or nested functions?
+First, let's take a look at this code snippet:
+```tsx
+import { ChangeEvent, useState } from "react";
+
+export default function MyComponent() {
+  const [count, setCount] = useState(0);
+  const [step, setStep] = useState(1);
+
+  const handleIncreaseCount = () => {
+    setCount(prevCount => prevCount + step);
+  };
+
+  const handleStepChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setStep(Number(e.target.value));
+  };
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <p>Step: {step}</p>
+      <input
+        type="number"
+        value={step}
+        onChange={handleStepChange}
+        min="1"
+      />
+      <button onClick={handleIncreaseCount}>Increase Count</button>
+    </div>
+  );
+}
+```
+In the code above, we use two `useState` hooks, but we only pass the default values and do not provide any **identifying keys** for the useState hooks.
+So, how does React know which `state` belongs to which `useState`?
+It's because **hooks rely on the call order**, if the call order is stable, React can link the `state` to the corresponding `useState`.
+
+As long as the call order remains consistent during component render, React can determine which internal state corresponds to which hook.
+Therefore, if we use hooks inside loops or conditions (like if-else statements), this can **change the call order**,
+causing React to lose track of the corresponding state for each hook.
+
+Next, let's implement a basic version of `useState` and `useEffect` together to clarify this issue.
+
+## Creating our `useState` hook
+Let's create a simple version of `React` and `useState` hook to understand how it works under the hood:
+
+```js
+const MyReact = () => {
+  const useState = (initialValue) => {
+    let state = initialValue; // setting initial value for state
+
+    const setterFunction = (newState) => {
+      state = newState; // setting new value for state
+    }
+
+    return [state, setterFunction];
+  }
+
+  return {
+    useState
+  }
+}
+```
+
+In the code above, we have created `MyReact` and `useState` functions.
+- `MyReact` function acts as a container for our custom hook. This design mimics the structure of the React library,
+allowing us to build our own hook functionality.
+- `useState` function takes an initial value and returns an array containing the current state and a setter function.
+- Inside `useState`, we declare a variable `state` and initialize it with the `initialValue`.
+- The `setterFunction` mimics the behavior of React `setState`, allowing users to update the state value.
+
+Now, it's time to test it out:
+
+```js
+const { useState } = MyReact();
+
+const MyComponent = () => {
+  const [counter, setCounter] = useState(1);
+
+  console.log(counter); // log 1
+}
+
+MyComponent(); // Initial render of the component
+```
+
+In the code above, we have created a simple component `MyComponent` that uses our custom `useState` hook.
+When we call `MyComponent`, it logs the initial value of the counter, which is `1`.
+
+### Handling state changes
+
+Now let's try changing the state:
+
+```js {8-10, 14}
+const { useState } = MyReact();
+
+const MyComponent = () => {
+  const [counter, setCounter] = useState(1);
+
+  console.log(counter);
+
+  if (counter === 1) {
+   setCounter(2);
+  }
+}
+
+MyComponent(); // Initial render of the component
+MyComponent(); // Simulate component re-rendering
+```
+
+In the updated code, we updated the counter to `2`, we put the `setCounter` inside an if statement because otherwise in
+a normal React application this would cause an infinite loop.
+
+When we update the state, this will trigger a re-render of the component.
+So I simply called `MyComponent` again to simulate this re-render.
+
+Let's see the output:
+```shell
+1
+1
+```
+
+We expected it to log 2 statements: the first with value would be 1, and the second one would be 2.
+But it logs both statements with the value of 1.
+
+Why is that? The problem is that every time `MyComponent` is called, it invokes 2 different `useState` functions,
+the value of counter changed only in the function during the first call.
+
+### Persisting state across renders
+
+This can be easily fixed, by moving our definition up to keep tracking the state and the changes for it.
+
+```js {2, 4-6}
+const MyReact = () => {
+  let state;
+  const useState = (initialValue) => {
+    if (state === undefined) {
+      state = initialValue; // setting initial value for state
+    }
+
+    const setterFunction = (newState) => {
+      state = newState; // setting new value for state
+    }
+
+    return [state, setterFunction];
+  }
+
+  return {
+    useState
+  }
+}
+```
+
+Let's test it again:
+
+```shell
+1
+2
+```
+
+Now, it logs the expected output. 🎉 🎉 🎉
+
+### Handling multiple states
+
+But in a real-world application, we can have multiple states in a component.
+To do this, we need to update our React like this:
+
+```js {2-4, 7-8, 10-12, 14-16, 18, 22-25}
+const MyReact = () => {
+  let state = []; // array to store state values
+
+  let index = 0; // index to track the current hook position
+
+  const useState = (initialValue) => {
+    const localHookIndex = index; // store the current index for this hook
+    index++; // increment index for the next hook call
+
+    if (state[localHookIndex] === undefined) {
+      state[localHookIndex] = initialValue; // setting initial value for state
+    }
+
+    const setterFunction = (newState) => {
+      state[localHookIndex] = newState; // setting new value for state
+    }
+
+    return [state[localHookIndex], setterFunction];
+  }
+
+  // render function
+  const render = (component) => {
+    index = 0; // reset index for re-renders
+    return component();
+  }
+
+  return {
+    useState,
+    render
+  }
+}
+```
+
+In the code above, to handle multiple states, we changed the `state` variable to **an array**.
+
+The `index` variable is used to track the position of the hook in the state array.
+Each time `useState` is called, this `index` will be incremented to ensure that each call to `useState` corresponds to a unique index in the state array.
+
+The current value of index is stored in `locaHookIndex` before it is incremented.
+This ensures that in each call to `useState`, we have the correct index for the current hook and
+prevent the `setterFunction` to use wrong index, because it runs after the `useState` is called.
+
+Finally, we added a `render` function to simulate the rendering process of a component.
+It resets the `index` back to 0 each time a component is re-rendered, ensuring that each hook can properly access its respective state value.
+
+Let's add a new state to our component:
+
+```js {5, 8, 14-16}
+const { useState, render } = MyReact();
+
+const MyComponent = () => {
+  const [counter, setCounter] = useState(1);
+  const [isSubmit, setIsSubmit] = useState(false);
+
+  console.log(counter);
+  console.log(isSubmit);
+
+  if (counter === 1) {
+    setCounter(2);
+  }
+
+  if (!isSubmit) {
+    setIsSubmit(true);
+  }
+}
+
+render(MyComponent); // Initial render of the component
+render(MyComponent); // Simulate component re-rendering
+```
+
+Output:
+
+```shell
+1
+false
+2
+true
+```
+
+Our React works as expected, and we can now handle multiple states in a component. 🎉 🎉 🎉
+
+## Creating our `useEffect` hook
+To create the `useEffect` hook, first rename the previous `state` array to `hooks` for better understanding,
+as this array will now contain the necessary values to work with hooks.
+
+```js {2, 10-35}
+const MyReact = () => {
+  let hooks = []; // array to store hooks values
+
+  let index = 0; // index to track the current hook position
+
+  const useState = (initialValue) => {
+    // ... useState's logic
+  }
+
+  const useEffect = (callback, dependencyArray) => {
+    let hasChanged = true; // track whether any dependency has changed
+
+    const oldDependencies = hooks[index]; // retrieve the old dependencies stored at the current index
+
+    if (oldDependencies) {
+      hasChanged = false;
+
+      // check each dependency for changes
+      for (let i = 0; i < dependencyArray.length; i++) {
+        const dependency = dependencyArray[i];
+        const oldDependency = oldDependencies[i];
+
+        if (!Object.is(dependency, oldDependency)) {
+          hasChanged = true;
+          break;
+        }
+      }
+    }
+
+    if (hasChanged) {
+      callback(); // call the effect if dependencies changed
+    }
+
+    hooks[index] = dependencyArray; // update hooks with new dependencies
+    index++; // increase index for next hook
+  }
+
+  // render function
+  const render = (component) => {
+    index = 0; // reset index for re-renders
+    return component();
+  }
+
+  return {
+    useState,
+    useEffect,
+    render
+  }
+}
+```
+
+This function accepts a `callback` and a `dependencyArray` to manage side effects based on dependency changes.
+
+A `hasChanged` flag is initialized to track whether any dependencies have changed since the last render.
+
+The previous dependencies for the current hook index are retrieved from the `hooks` array.
+
+If there are old dependencies, the function iterates through the `dependencyArray` to check for changes using `Object.is()`.
+If any dependency has changed, `hasChanged` is set to true.
+
+If the dependencies have changed, the provided `callback` is executed, allowing for side effects to be run.
+
+Finally, the `hooks` array is updated with the new dependencies, and the index is incremented to prepare for the next hook call.
+
+Let's test the hook:
+
+```js
+const { useState, useEffect, render } = MyReact();
+
+const MyComponent = () => {
+  const [counter, setCounter] = useState(1);
+  const [isSubmit, setIsSubmit] = useState(false);
+
+  useEffect(() => {
+    console.log('effect');
+  }, []);
+
+  console.log(counter);
+  console.log(isSubmit);
+
+  if (counter === 1) {
+    setCounter(2);
+  }
+
+  if (!isSubmit) {
+    setIsSubmit(true);
+  }
+}
+
+render(MyComponent); // Initial render of the component
+render(MyComponent); // Simulate component re-rendering
+```
+Output:
+```shell
+effect
+1
+false
+2
+true
+```
+The `useEffect` hook only runs on the initial render due to its empty dependency array.
+
+## Conclusion
+This is just a very basic implementation of `React`, `useState` and `useEffect` hooks to help us understand how hooks work under the hood.
+The real hooks are more complex, and perform many other things behind the scenes.
+
+To summarize:
+- **Hooks is just an array**, and `React` accesses the array using **indexes**.
+- If we call hooks inside loops, conditions, **those indexes maybe different on every render**,
+and this can cause each of the hook to use wrong state.
+
+Source code for this implementation can be found [here](https://github.com/dvbtrung2302/site/blob/app/blog/react-hook-under-the-hood/my-react.js).
+
+## References
+- [React Hooks - Official Docs](https://react.dev/reference/react/hooks)
+- [Rules of Hooks - Official Docs](https://react.dev/reference/rules/rules-of-hooks)
+- [Rules of Hooks - Legacy Docs](https://legacy.reactjs.org/docs/hooks-rules.html#explanation)
+- [How do React Hooks actually work?](https://www.youtube.com/watch?v=1VVfMVQabx0)
+
+## Related Posts
+
+- [Deep dive: How do React hooks really work?](https://www.netlify.com/blog/2019/03/11/deep-dive-how-do-react-hooks-really-work/)
+- [Behind the Scenes: React Hooks API](https://www.fullstack.com/labs/resources/blog/behind-the-scenes-react-hooks-api)

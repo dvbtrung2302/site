@@ -2,20 +2,58 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  min-width: 360px;
+  scrollbar-gutter: stable;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  text-rendering: optimizeLegibility;
 }
+
+h1,
+h2,
+h3,
+h4 {
+  text-wrap: balance;
+}
+
+.prose :not(pre) > :where(code):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
+  border-radius: 8px;
+  background: #e7e5e4;
+  color: #f472b6;
+  padding: .15em .3em .05em;
+}
+
+pre [data-highlighted-line] {
+  margin-left: -16px;
+  padding-left: 12px;
+  border-left: 4px solid #f472b6;
+  background-color: #022a4b;
+  display: block;
+  padding-right: 1em;
+}
+
+@media (prefers-color-scheme: dark) {
+  .prose :not(pre) > :where(code):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
+    background: #404040;
+    color: #fbcfe8;
+  }
+
+  pre [data-highlighted-line] {
+    background-color: #081a29;
+    border-left: 4px solid #fbcfe8;
+  }
+}
+
+
+.prose :not(pre) > :where(code):not(:where([class~="not-prose"],[class~="not-prose"] *))::before {
+  content: "";
+}
+
+.prose :not(pre) > :where(code):not(:where([class~="not-prose"],[class~="not-prose"] *))::after {
+  content: "";
+}
+
+
+
