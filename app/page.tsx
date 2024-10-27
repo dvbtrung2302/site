@@ -2,6 +2,15 @@ import { Link } from "next-view-transitions";
 
 import { getBlogPosts } from "@/app/lib/blog";
 import { formatDate, slugify } from "@/app/utils";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "/",
+  },
+  title: "dvbtrung — A blog by Trung Dang",
+  description: "dvbtrung — A blog by Trung Dang",
+};
 
 export default function Home() {
   const posts = getBlogPosts().sort(

@@ -3,17 +3,15 @@ title: "React Hooks Under The Hood"
 description: "How useState, useEffect work behind the scenes"
 date: 2024-10-26
 ---
-
-export const metadata = {
-  title: "React Hooks Under The Hood",
-  date: "2024-10-26",
-  description: "How useState, useEffect work behind the scenes",
-  alternates: {
-    canonical: '/blog/react-hook-under-the-hood'
-  }
-};
-
+import { generateBlogMetadata } from "../../utils";
 import Title from '../title';
+
+export const metadata = generateBlogMetadata({
+  title: "React Hooks Under The Hood",
+  description: "How useState, useEffect work behind the scenes",
+  date: "2024-10-26",
+  slug: "react-hook-under-the-hood"
+})
 
 <Title title={metadata.title} date={metadata.date} />
 
@@ -29,7 +27,7 @@ So, why are these rules in place? Let’s explore this issue together.
 
 ## Why can't we call hooks inside loops, conditions, or nested functions?
 First, let's take a look at this code snippet:
-```tsx
+```tsx showLineNumbers
 import { ChangeEvent, useState } from "react";
 
 export default function MyComponent() {

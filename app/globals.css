@@ -29,7 +29,7 @@ pre [data-highlighted-line] {
   margin-left: -16px;
   padding-left: 12px;
   border-left: 4px solid #f472b6;
-  background-color: #022a4b;
+  background-color: #c8c8ff1a;
   display: block;
   padding-right: 1em;
 }
@@ -41,7 +41,6 @@ pre [data-highlighted-line] {
   }
 
   pre [data-highlighted-line] {
-    background-color: #081a29;
     border-left: 4px solid #fbcfe8;
   }
 }

@@ -1,6 +1,7 @@
 import "./globals.css";
 
 import { ReactNode } from "react";
+import { Metadata } from "next";
 import { ViewTransitions } from "next-view-transitions";
 
 import { sans } from "./fonts";
@@ -8,18 +9,43 @@ import { clx } from "./utils";
 
 import Header from "./header";
 import Footer from "./footer";
-import { Metadata } from "next";
+import { SITE_URL } from "./constants";
 
 export const metadata: Metadata = {
-  // metadataBase: new URL(""), // update later
+  metadataBase: new URL(`${SITE_URL}`),
   alternates: {
     canonical: "/",
+    types: {
+      "application/atom+xml": `${SITE_URL}/atom.xml`,
+      "application/rss+xml": `${SITE_URL}/rss.xml`,
+    },
   },
   title: {
-    default: "Trung Dang",
+    default: "dvbtrung — A blog by Trung Dang",
     template: "%s | Trung Dang",
   },
   description: "dvbtrung — A blog by Trung Dang",
+  openGraph: {
+    title: "dvbtrung — A blog by Trung Dang",
+    description: "dvbtrung — A blog by Trung Dang",
+    url: SITE_URL,
+    siteName: "dvbtrung",
+    locale: "en_US",
+    type: "website",
+    images: [`${SITE_URL}/og/home`],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    "max-video-preview": -1,
+    "max-image-preview": "large",
+    "max-snippet": -1,
+  },
+  twitter: {
+    title: "dvbtrung",
+    card: "summary_large_image",
+    creator: "@dvbtrung",
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

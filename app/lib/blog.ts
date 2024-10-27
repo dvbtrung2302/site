@@ -13,7 +13,7 @@ type FrontmatterParseResult = {
   content: string;
 };
 
-type MDXFileData = FrontmatterParseResult & {
+export type MDXFileData = FrontmatterParseResult & {
   slug: string;
 };
 
