@@ -5,5 +5,9 @@ import { getBlogPosts } from "@/app/lib/blog";
 export async function GET() {
   const posts = getBlogPosts();
   const feed = generateFeed(posts, metadata);
-  return new Response(feed.atom1());
+  return new Response(feed.atom1(), {
+    headers: {
+      "Content-Type": "text/xml",
+    },
+  });
 }

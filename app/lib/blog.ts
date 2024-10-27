@@ -10,7 +10,6 @@ type Metadata = {
 
 type FrontmatterParseResult = {
   metadata: Metadata;
-  content: string;
 };
 
 export type MDXFileData = FrontmatterParseResult & {
@@ -25,7 +24,7 @@ const getMDXDirectories = (dir: string): string[] => {
 
 const readMDXFile = (filePath: string): FrontmatterParseResult => {
   const rawContent = fs.readFileSync(filePath, "utf-8");
-  const { data, content } = matter(rawContent);
+  const { data } = matter(rawContent);
 
   return {
     metadata: {
@@ -33,7 +32,6 @@ const readMDXFile = (filePath: string): FrontmatterParseResult => {
       description: data.description,
       date: data.date,
     },
-    content,
   };
 };
 
@@ -43,13 +41,12 @@ const getMDXData = (dir: string): MDXFileData[] => {
   return mdxDirectories.map((directory) => {
     const filePath = path.join(dir, directory, "page.mdx"); // Always read page.mdx
 
-    const { metadata, content } = readMDXFile(filePath);
+    const { metadata } = readMDXFile(filePath);
     const slug = directory; // Use the directory name as the slug
 
     return {
       metadata,
       slug,
-      content,
     };
   });
 };

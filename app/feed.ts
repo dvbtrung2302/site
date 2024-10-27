@@ -1,5 +1,5 @@
-import { Feed } from "feed";
 import { Metadata } from "next";
+import { Feed } from "feed";
 
 import { MDXFileData } from "@/app/lib/blog";
 import { SITE_URL } from "@/app/constants";
@@ -13,7 +13,7 @@ export function generateFeed(posts: MDXFileData[], metadata: Metadata) {
     },
     description: metadata.description?.toString() || "",
     favicon: `${SITE_URL}/favicon.ico`,
-    feedLinks: { atom: `${SITE_URL}atom.xml`, rss: `${SITE_URL}rss.xml` },
+    feedLinks: { atom: `${SITE_URL}/atom.xml`, rss: `${SITE_URL}/rss.xml` },
     generator: "Feed for Node.js",
     id: SITE_URL,
     image: "https://github.com/dvbtrung2302.png",
@@ -28,8 +28,8 @@ export function generateFeed(posts: MDXFileData[], metadata: Metadata) {
     feed.addItem({
       date: new Date(post.metadata.date),
       description: post.metadata.description,
-      id: `${SITE_URL}${post.slug}/`,
-      link: `${SITE_URL}${post.slug}/`,
+      id: `${SITE_URL}/blog/${post.slug}/`,
+      link: `${SITE_URL}/blog/${post.slug}/`,
       title: post.metadata.title,
     });
   }
