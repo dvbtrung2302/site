@@ -3,6 +3,7 @@ import "./globals.css";
 import { ReactNode } from "react";
 import { Metadata } from "next";
 import { ViewTransitions } from "next-view-transitions";
+import { Analytics } from "@vercel/analytics/react";
 
 import { sans } from "./fonts";
 import { clx } from "./utils";
@@ -58,10 +59,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           sans.className,
         )}
       >
-        <body className="mx-auto flex min-h-screen max-w-2xl flex-col bg-[--bg] px-5 py-12 text-[--text]">
+        <body className="mx-auto flex min-h-dvh max-w-2xl flex-col bg-[--bg] px-5 py-12 text-[--text]">
           <Header />
           <main className="flex-grow">{children}</main>
           <Footer />
+          <Analytics />
         </body>
       </html>
     </ViewTransitions>
