@@ -158,7 +158,7 @@ Ensure that the following errors do not appear in [axe DevTools](https://docs.de
 ```
 
 
-**4. Ensure that the correct elements are used for text emphasis such as `<strong>`,`<b>`,`<em>`.**
+**4. Ensure that the correct elements are used for text emphasis such as `<strong>`,`<em>`.**
 
 **Bad**
 ```tsx
@@ -167,6 +167,9 @@ Ensure that the following errors do not appear in [axe DevTools](https://docs.de
   <i>Italic</i>
 </div>
 ```
+
+`<b>` and `<i>`: These are visual-only tags that do not provide any semantic meaning to screen readers, so they are best reserved for purely decorative purposes rather than conveying importance or emphasis.
+
 **Good**
 ```tsx
 <div>
