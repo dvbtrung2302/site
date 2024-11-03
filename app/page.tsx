@@ -30,7 +30,6 @@ export default function Home() {
             <p
               style={{
                 viewTransitionName: slugify(post.metadata.title),
-                width: "fit-content",
               }}
               className="text-lg font-medium group-hover:underline group-hover:decoration-neutral-400 group-hover:underline-offset-4 group-hover:dark:decoration-neutral-600"
             >

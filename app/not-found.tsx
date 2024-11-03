@@ -3,7 +3,7 @@ import { Link } from "next-view-transitions";
 export default function NotFound() {
   return (
     <article className="prose prose-neutral dark:prose-invert">
-      <h1 className="title mb-2 max-w-[650px] text-3xl font-medium tracking-tighter">
+      <h1 className="title mb-2 max-w-[650px] text-3xl font-medium">
         not found
       </h1>
       <div className="mt-8">

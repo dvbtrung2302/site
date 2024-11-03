@@ -1,0 +1,297 @@
+---
+title: 'Understanding WCAG 2.2 Success Criterion "1.3.1 Info and Relationships"'
+description: 'Learn accessibility best practices for "Info and Relationships"'
+date: 2024-11-03
+---
+import Image from "next/image";
+import Title from "../title";
+
+import { generateBlogMetadata } from "../../utils";
+
+import voiceoverHeadingNavigation from "./voiceover-heading-navigation.gif";
+import voiceoverTableAndListNavigation from "./voiceover-table-and-list-navigation.gif";
+import voiceoverFormControlsNavigation from "./voiceover-form-controls-navigation.gif";
+import asteriskWithoutDescription from "./asterisk-without-description.gif";
+import asteriskWithDescription from "./asterisk-with-description.gif";
+
+export const metadata = generateBlogMetadata({
+  title: 'Understanding WCAG 2.2 Success Criterion "1.3.1 Info and Relationships"',
+  description: 'Learn accessibility best practices for "Info and Relationships"',
+  date: "2024-11-03",
+  slug: "wcag22-131-info-and-relationships"
+})
+
+<Title title={metadata.title} date={metadata.date} />
+
+This article provides an overview and personal insights on how to achieve ["1.3.1 Info and Relationships"](https://www.w3.org/TR/WCAG22/#info-and-relationships),
+a Success Criterion included in the [Web Content Accessibility Guidelines (WCAG) 2.2](https://www.w3.org/TR/WCAG22/).
+For precise details about the Success Criterion itself, please refer to the original document.
+
+[Background on WCAG 2](https://www.w3.org/TR/WCAG22/#background-on-wcag-2)
+> Web Content Accessibility Guidelines (WCAG) 2.2 defines how to make Web content more accessible to people with disabilities.
+Accessibility involves a wide range of disabilities, including visual, auditory, physical, speech, cognitive, language, learning, and neurological disabilities
+
+## What is Success Criterion "1.3.1 Info and Relationships"?
+WCAG 2.2 Success Criterion **1.3.1 Info and Relationships** is a Level A success criterion
+that emphasizes the importance of presenting content in a structured way so that its meaning and relationships are clear to all users, including those who rely on assistive technology.
+
+This criterion focuses on ensuring that information is conveyed through semantic relationships, not just visual cues, so that it can be accurately interpreted by screen readers and other accessibility tools.
+
+### Intent
+The intent of this Success Criterion is  to ensure that content structure and relationships conveyed visually or audibly remain clear and accessible when the presentation format changes.
+
+Information is structured and relationships are created using various visual and auditory cues. For visual representation, headings are often in a larger, bold font.
+In auditory representation, a change in voice pitch or speech rate may be used to emphasize important information.
+
+These structures and relationships should be clear and understandable for all users, no matter their sensory abilities.
+
+It is strongly encouraged that information and relationships be programmatically determined.
+If that's not possible, alternative text or other effective methods should be used to share the same information.
+
+### Benefits
+- This Success Criterion helps people with different disabilities by allowing user agents to adapt content according to the needs of individual users.
+- Users who are blind (using a screen reader) and deaf-blind using braille (text) refreshable displays benefit when information conveyed through color is also available in text.
+
+## How to test 1.3.1 Info and Relationships
+
+### Automated Testing
+Ensure that the following errors do not appear in [axe DevTools](https://docs.deque.com/devtools-for-web/4/en/devtools-extension) or [Accessibility Insights](https://accessibilityinsights.io/docs/web/overview/):
+
+- [aria-hidden-body](https://dequeuniversity.com/rules/axe/4.10/aria-hidden-body?application=RuleDescription): Ensure aria-hidden="true" is not present on the document body.
+- [aria-required-children](https://dequeuniversity.com/rules/axe/4.10/aria-required-children?application=RuleDescription): Ensure elements with an ARIA role that require child roles contain them.
+- [aria-required-parent](https://dequeuniversity.com/rules/axe/4.10/aria-required-parent?application=RuleDescription): Ensure elements with an ARIA role that require parent roles are contained by them.
+- [definition-list](https://dequeuniversity.com/rules/axe/4.10/definition-list?application=RuleDescription): Ensure `<dl>` elements are structured correctly.
+- [dlitem](https://dequeuniversity.com/rules/axe/4.10/dlitem?application=RuleDescription): Ensure `<dt>` and `<dd>` elements are contained by a `<dl>`.
+- [list](https://dequeuniversity.com/rules/axe/4.10/list?application=RuleDescription): Ensure that lists are structured correctly.
+- [listitem](https://dequeuniversity.com/rules/axe/4.10/listitem?application=RuleDescription): Ensure `<li>` elements are used semantically.
+- [td-headers-attr](https://dequeuniversity.com/rules/axe/4.10/td-headers-attr?application=RuleDescription): Ensure that each cell in a table that uses the headers attribute refers only to other cells in that table.
+- [th-has-data-cells](https://dequeuniversity.com/rules/axe/4.10/th-has-data-cells?application=RuleDescription): Ensure that `<th>` elements and elements with `role=columnheader/rowheader` have data cells they describe.
+- [p-as-heading](https://dequeuniversity.com/rules/axe/4.10/p-as-heading?application=RuleDescription): Ensure bold, italic text and font-size is not used to style `<p>` elements as a heading.
+- [heading-order](https://dequeuniversity.com/rules/axe/4.8/heading-order): Ensure that the error "Heading levels should only increase by one" does not appear.
+- [table-fake-caption](https://dequeuniversity.com/rules/axe/4.10/table-fake-caption?application=RuleDescription): Ensure that tables with a caption use the `<caption>` element.
+- [td-has-header](https://dequeuniversity.com/rules/axe/4.10/td-has-header?application=RuleDescription): Ensure that each non-empty data cell in a `<table>` larger than 3 by 3 has one or more table headers.
+
+**Note**: *Please refer to the official usage guides for more information on how to use these tools.*
+
+### Manual Testing
+
+**1. Ensure that headings (`<h1>` to `<h6>`) are used in a proper hierarchical order to maintain logical structure and accessibility.**
+
+**Bad**
+```tsx
+<h1>Title 1</h1>
+<h3>Title 3</h3>
+<h2>Title 2</h2>
+<h4>Title 4</h4>
+```
+**Good**
+```tsx
+<h1>Title 1</h1>
+<p>Body 1</p>
+<h2>Title 2</h2>
+<p>Body 2</p>
+<h3>Title 3</h3>
+<p>Body 3</p>
+```
+
+**2. Ensure that appropriate HTML elements are used for tables and lists such as `<table>`, `<ul>`,`<ol>`.**
+
+**Bad**
+```tsx
+{/*List*/}
+<div>
+  * foo<br />
+  * bar<br />
+  * baz
+</div>
+{/*Table*/}
+<div>
+  <div>Name: John Doe</div>
+  <div>Position: Software Engineer</div>
+</div>
+```
+
+**Good**
+  ```tsx
+  {/*List*/}
+  <ul>
+    <li>foo</li>
+    <li>bar</li>
+    <li>baz</li>
+  </ul>
+  {/*Table*/}
+  <table>
+    <thead>
+      <tr>
+        <td>Name</td>
+        <td>Position</td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>John Doe</td>
+        <td>Software Engineer</td>
+      </tr>
+    </tbody>
+  </table>
+  ```
+
+
+**3. Ensure that the correct HTML elements are used for different types of UI components:**
+- Use `<button>` for clickable elements.
+- Use `<a>` for links.
+- ...
+
+**Bad**
+```tsx
+{/*Button*/}
+<div onClick={handleClick}>Click me</div>
+{/*Link*/}
+<div onClick={handleClick}>Go to Google</div>
+```
+**Good**
+```tsx
+{/*Button*/}
+<button onClick={handleClick}>Click me</button>
+{/*Link*/}
+<a href="https://www.google.com">Go to Google</a>
+```
+
+
+**4. Ensure that the correct elements are used for text emphasis such as `<strong>`,`<b>`,`<em>`.**
+
+**Bad**
+```tsx
+<div>
+  <b>Important</b>
+  <i>Italic</i>
+</div>
+```
+**Good**
+```tsx
+<div>
+  <strong>Important</strong>
+  <em>Italic</em>
+</div>
+```
+
+
+**5. Ensure that appropriate HTML elements are used for form elements such as `<input>`, `<select>`, `<textarea>`, `<label>`, `<fieldset>`, `<legend>`, etc.**
+
+**Bad**
+```tsx
+<div>
+  <div>Username</div>
+  <input type="text" />
+  <div>Password</div>
+  <input type="password" />
+</div>
+```
+**Good**
+```tsx
+<form>
+  <label for="username">Username</label>
+  <input type="text" id="username" />
+  <label for="password">Password</label>
+  <input type="password" id="password" />
+</form>
+```
+
+**6. Ensure that UI components are implemented using HTML semantic elements wherever possible.**
+- Accordion/Disclosure: Use `<details>` element
+- Dialog: Use the `<dialog>` element
+
+**Bad**
+```tsx
+{/*Accordion*/}
+<div>
+  <div onClick={handleClick}>Title</div>
+  <div>Content</div>
+</div>
+{/*Dialog*/}
+<div>
+  <div onClick={handleClick}>Open Dialog</div>
+  <div>Dialog Content</div>
+</div>
+```
+**Good**
+```tsx
+{/*Accordion*/}
+<details>
+  <summary>Title</summary>
+  <p>Content</p>
+</details>
+{/*Dialog*/}
+<dialog>
+  <div>Dialog Content</div>
+</dialog>
+```
+
+### Screen Reader
+We can use **VoiceOver** to test the accessibility of our content. VoiceOver is a screen reader built into Apple products that reads aloud the content on the screen.
+
+Please refer to the official usage guide: [VoiceOver User Guide](https://support.apple.com/guide/voiceover/welcome/mac)
+
+**1. Ensure that the correct heading order can be verified using a screen reader.**
+- Press the VoiceOver modifier key (Caps Lock or Control + Option) + U.
+- From there, use the left and right arrow keys to navigate the different lists available in the rotor until you get to the `Headings`.
+<Image src={voiceoverHeadingNavigation} alt="VoiceOver Heading Navigation" />
+
+**2. Ensure that tables and lists are properly recognized by screen readers.**
+- After turning on VoiceOver, navigate to the table or list by pressing the VoiceOver modifier key (Caps Lock or Control + Option) along with the left and right arrow keys.
+<Image src={voiceoverTableAndListNavigation} alt="VoiceOver Table and List Navigation" />
+
+**3. Ensure that form control elements are properly recognized by screen readers.**
+- Press the VoiceOver modifier key (Caps Lock or Control + Option) + U.
+- From there, use the left and right arrow keys to navigate the different lists available in the rotor until you get to the `Form Controls`.
+<Image src={voiceoverFormControlsNavigation} alt="VoiceOver Form Controls Navigation" />
+
+**4. Ensure that the relationships between related elements are conveyed properly to screen readers.**
+
+Example: If a symbol like an asterisk (*) indicates a required field, make sure it is associated with the appropriate description text.
+
+**Bad**
+
+The asterisk in the form without description does not make sense what it intends.
+
+```tsx
+<form>
+  <label for="email">
+    Email address
+    <span>*</span>
+  </label>
+  <input type="email" id="email" required />
+  <!--...-->
+</form>
+```
+
+<Image src={asteriskWithoutDescription} alt="Asterisk without description" />
+
+**Good**
+
+Associating the asterisk with the description by using `aria-labelledby` can indicate it is a required field.
+
+```tsx
+<p id="required-description">Fields marked with * are required.</p>
+
+<form>
+  <label for="email">
+    Email address
+    <span aria-labelledby="required-description">*</span>
+  </label>
+  <input type="email" id="email" required />
+  <!--...-->
+</form>
+```
+
+<Image src={asteriskWithDescription} alt="Asterisk with description" />
+
+## Conclusion
+- WCAG 2.2 Success Criterion 1.3.1 Info and Relationships (Level A) requires that content is structured clearly so all users, including those using assistive technology, can understand its meaning and relationships.
+- This Success Criterion ensures that content structure and relationships are preserved and accessible, even when the presentation format changes.
+- This success criterion can be verified through various testing methods: automated testing, manual testing, and screen reader testing (such as Mac’s VoiceOver).
+
+## References
+- [Web Content Accessibility Guidelines (WCAG) 2.2](https://www.w3.org/TR/WCAG22/)
+- [Success Criterion 1.3.1 Info and Relationships](https://www.w3.org/TR/WCAG22/#info-and-relationships)
+- [Understanding Success Criterion 1.3.1 Info and Relationships](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships.html)
