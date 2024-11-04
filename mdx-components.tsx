@@ -1,20 +1,22 @@
 import {
   Children,
   ComponentPropsWithoutRef,
-  HtmlHTMLAttributes,
-  ReactElement,
   createElement,
+  HtmlHTMLAttributes,
   isValidElement,
+  ReactElement,
+  ReactNode,
 } from "react";
 import { Link } from "next-view-transitions";
 import type { MDXComponents } from "mdx/types";
 import { codeToHtml, ShikiTransformer } from "shiki";
 import {
-  transformerNotationHighlight,
   transformerNotationFocus,
+  transformerNotationHighlight,
 } from "@shikijs/transformers";
 
 import CopyButton from "./copy-button";
+import { slugify } from "./app/utils";
 
 type AnchorProps = ComponentPropsWithoutRef<"a">;
 type HeadingProps = ComponentPropsWithoutRef<"h1">;
@@ -36,10 +38,30 @@ function CopyLinkIcon() {
   );
 }
 
+const generateAnchorId = (children: ReactNode): string => {
+  if (typeof children === "string") {
+    return slugify(children);
+  }
+
+  let id = "";
+
+  for (const child of Children.toArray(children)) {
+    if (typeof child === "string") {
+      id += child;
+    }
+
+    if (isValidElement(child)) {
+      id += generateAnchorId(child.props.children);
+    }
+  }
+
+  return slugify(id);
+};
+
 const createHeading = (level: 1 | 2 | 3 | 4 | 5 | 6) => {
   // eslint-disable-next-line react/display-name
   return ({ children, id, ...props }: HeadingProps) => {
-    const anchorId = id || String(children).toLowerCase().replace(/\s+/g, "-");
+    const anchorId = id || generateAnchorId(children);
 
     return createElement(
       `h${level}`,
@@ -48,7 +70,7 @@ const createHeading = (level: 1 | 2 | 3 | 4 | 5 | 6) => {
         children,
         <a
           key="anchor"
-          aria-label={`Permalink: ${children}`}
+          aria-label={`Permalink: ${anchorId}`}
           href={`#${anchorId}`}
           className="anchor"
         >
