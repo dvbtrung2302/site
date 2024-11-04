@@ -27,11 +27,11 @@ So, why are these rules in place? Let’s explore this issue together.
 
 ## Why can't we call hooks inside loops, conditions, or nested functions?
 First, let's take a look at this code snippet:
-```tsx showLineNumbers
+```tsx
 import { ChangeEvent, useState } from "react";
 
 export default function MyComponent() {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(0); // [!code focus:2]
   const [step, setStep] = useState(1);
 
   const handleIncreaseCount = () => {
@@ -116,7 +116,7 @@ When we call `MyComponent`, it logs the initial value of the counter, which is `
 
 Now let's try changing the state:
 
-```js {8-10, 14}
+```js
 const { useState } = MyReact();
 
 const MyComponent = () => {
@@ -124,13 +124,13 @@ const MyComponent = () => {
 
   console.log(counter);
 
-  if (counter === 1) {
+  if (counter === 1) { // [!code highlight:3]
    setCounter(2);
   }
 }
 
 MyComponent(); // Initial render of the component
-MyComponent(); // Simulate component re-rendering
+MyComponent(); // Simulate component re-rendering // [!code highlight]
 ```
 
 In the updated code, we updated the counter to `2`, we put the `setCounter` inside an if statement because otherwise in
@@ -140,7 +140,7 @@ When we update the state, this will trigger a re-render of the component.
 So I simply called `MyComponent` again to simulate this re-render.
 
 Let's see the output:
-```shell
+```zsh
 1
 1
 ```
@@ -155,11 +155,11 @@ the value of counter changed only in the function during the first call.
 
 This can be easily fixed, by moving our definition up to keep tracking the state and the changes for it.
 
-```js {2, 4-6}
+```js
 const MyReact = () => {
-  let state;
+  let state; // [!code highlight]
   const useState = (initialValue) => {
-    if (state === undefined) {
+    if (state === undefined) { // [!code highlight:3]
       state = initialValue; // setting initial value for state
     }
 
@@ -178,7 +178,7 @@ const MyReact = () => {
 
 Let's test it again:
 
-```shell
+```zsh
 1
 2
 ```
@@ -190,29 +190,29 @@ Now, it logs the expected output. 🎉 🎉 🎉
 But in a real-world application, we can have multiple states in a component.
 To do this, we need to update our React like this:
 
-```js {2-4, 7-8, 10-12, 14-16, 18, 22-25}
+```js
 const MyReact = () => {
-  let state = []; // array to store state values
+  let state = []; // array to store state values // [!code highlight:3]
 
   let index = 0; // index to track the current hook position
 
   const useState = (initialValue) => {
-    const localHookIndex = index; // store the current index for this hook
+    const localHookIndex = index; // store the current index for this hook // [!code highlight:2]
     index++; // increment index for the next hook call
 
-    if (state[localHookIndex] === undefined) {
+    if (state[localHookIndex] === undefined) { // [!code highlight:3]
       state[localHookIndex] = initialValue; // setting initial value for state
     }
 
-    const setterFunction = (newState) => {
+    const setterFunction = (newState) => { // [!code highlight:3]
       state[localHookIndex] = newState; // setting new value for state
     }
 
-    return [state[localHookIndex], setterFunction];
+    return [state[localHookIndex], setterFunction]; // [!code highlight]
   }
 
   // render function
-  const render = (component) => {
+  const render = (component) => { // [!code highlight:4]
     index = 0; // reset index for re-renders
     return component();
   }
@@ -238,21 +238,21 @@ It resets the `index` back to 0 each time a component is re-rendered, ensuring t
 
 Let's add a new state to our component:
 
-```js {5, 8, 14-16}
+```js
 const { useState, render } = MyReact();
 
 const MyComponent = () => {
   const [counter, setCounter] = useState(1);
-  const [isSubmit, setIsSubmit] = useState(false);
+  const [isSubmit, setIsSubmit] = useState(false); // [!code highlight]
 
   console.log(counter);
-  console.log(isSubmit);
+  console.log(isSubmit); // [!code highlight]
 
   if (counter === 1) {
     setCounter(2);
   }
 
-  if (!isSubmit) {
+  if (!isSubmit) { // [!code highlight:3]
     setIsSubmit(true);
   }
 }
@@ -263,7 +263,7 @@ render(MyComponent); // Simulate component re-rendering
 
 Output:
 
-```shell
+```zsh
 1
 false
 2
@@ -286,7 +286,7 @@ const MyReact = () => {
     // ... useState's logic
   }
 
-  const useEffect = (callback, dependencyArray) => {
+  const useEffect = (callback, dependencyArray) => { // [!code focus:27]
     let hasChanged = true; // track whether any dependency has changed
 
     const oldDependencies = hooks[index]; // retrieve the old dependencies stored at the current index
@@ -350,7 +350,7 @@ const MyComponent = () => {
   const [counter, setCounter] = useState(1);
   const [isSubmit, setIsSubmit] = useState(false);
 
-  useEffect(() => {
+  useEffect(() => { // [!code highlight:3]
     console.log('effect');
   }, []);
 
@@ -370,7 +370,7 @@ render(MyComponent); // Initial render of the component
 render(MyComponent); // Simulate component re-rendering
 ```
 Output:
-```shell
+```zsh
 effect
 1
 false

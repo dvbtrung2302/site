@@ -78,14 +78,14 @@ Ensure that the following errors do not appear in [axe DevTools](https://docs.de
 **1. Ensure that headings (`<h1>` to `<h6>`) are used in a proper hierarchical order to maintain logical structure and accessibility.**
 
 **Bad**
-```tsx
+```html
 <h1>Title 1</h1>
 <h3>Title 3</h3>
 <h2>Title 2</h2>
 <h4>Title 4</h4>
 ```
 **Good**
-```tsx
+```html
 <h1>Title 1</h1>
 <p>Body 1</p>
 <h2>Title 2</h2>
@@ -97,14 +97,14 @@ Ensure that the following errors do not appear in [axe DevTools](https://docs.de
 **2. Ensure that appropriate HTML elements are used for tables and lists such as `<table>`, `<ul>`,`<ol>`.**
 
 **Bad**
-```tsx
-{/*List*/}
+```html
+<!--List-->
 <div>
   * foo<br />
   * bar<br />
   * baz
 </div>
-{/*Table*/}
+<!--Table-->
 <div>
   <div>Name: John Doe</div>
   <div>Position: Software Engineer</div>
@@ -112,14 +112,14 @@ Ensure that the following errors do not appear in [axe DevTools](https://docs.de
 ```
 
 **Good**
-  ```tsx
-  {/*List*/}
+  ```html
+<!--List-->
   <ul>
     <li>foo</li>
     <li>bar</li>
     <li>baz</li>
   </ul>
-  {/*Table*/}
+<!--Table-->
   <table>
     <thead>
       <tr>
@@ -144,16 +144,16 @@ Ensure that the following errors do not appear in [axe DevTools](https://docs.de
 
 **Bad**
 ```tsx
-{/*Button*/}
+// Button
 <div onClick={handleClick}>Click me</div>
-{/*Link*/}
+// Link
 <div onClick={handleClick}>Go to Google</div>
 ```
 **Good**
 ```tsx
-{/*Button*/}
+// Button
 <button onClick={handleClick}>Click me</button>
-{/*Link*/}
+// Link
 <a href="https://www.google.com">Go to Google</a>
 ```
 
@@ -161,7 +161,7 @@ Ensure that the following errors do not appear in [axe DevTools](https://docs.de
 **4. Ensure that the correct elements are used for text emphasis such as `<strong>`,`<em>`.**
 
 **Bad**
-```tsx
+```html
 <div>
   <b>Important</b>
   <i>Italic</i>
@@ -171,7 +171,7 @@ Ensure that the following errors do not appear in [axe DevTools](https://docs.de
 `<b>` and `<i>`: These are visual-only tags that do not provide any semantic meaning to screen readers, so they are best reserved for purely decorative purposes rather than conveying importance or emphasis.
 
 **Good**
-```tsx
+```html
 <div>
   <strong>Important</strong>
   <em>Italic</em>
@@ -182,7 +182,7 @@ Ensure that the following errors do not appear in [axe DevTools](https://docs.de
 **5. Ensure that appropriate HTML elements are used for form elements such as `<input>`, `<select>`, `<textarea>`, `<label>`, `<fieldset>`, `<legend>`, etc.**
 
 **Bad**
-```tsx
+```html
 <div>
   <div>Username</div>
   <input type="text" />
@@ -191,7 +191,7 @@ Ensure that the following errors do not appear in [axe DevTools](https://docs.de
 </div>
 ```
 **Good**
-```tsx
+```html
 <form>
   <label for="username">Username</label>
   <input type="text" id="username" />
@@ -206,12 +206,12 @@ Ensure that the following errors do not appear in [axe DevTools](https://docs.de
 
 **Bad**
 ```tsx
-{/*Accordion*/}
+// Accordion
 <div>
   <div onClick={handleClick}>Title</div>
   <div>Content</div>
 </div>
-{/*Dialog*/}
+// Dialog
 <div>
   <div onClick={handleClick}>Open Dialog</div>
   <div>Dialog Content</div>
@@ -219,12 +219,12 @@ Ensure that the following errors do not appear in [axe DevTools](https://docs.de
 ```
 **Good**
 ```tsx
-{/*Accordion*/}
+// Accordion
 <details>
   <summary>Title</summary>
   <p>Content</p>
 </details>
-{/*Dialog*/}
+// Dialog
 <dialog>
   <div>Dialog Content</div>
 </dialog>
@@ -257,7 +257,7 @@ Example: If a symbol like an asterisk (*) indicates a required field, make sure 
 
 The asterisk in the form without description does not make sense what it intends.
 
-```tsx
+```html
 <form>
   <label for="email">
     Email address
@@ -274,13 +274,13 @@ The asterisk in the form without description does not make sense what it intends
 
 Associating the asterisk with the description by using `aria-labelledby` can indicate it is a required field.
 
-```tsx
-<p id="required-description">Fields marked with * are required.</p>
+```html
+<p id="required-description">Fields marked with * are required.</p> // [!code focus]
 
 <form>
   <label for="email">
     Email address
-    <span aria-labelledby="required-description">*</span>
+    <span aria-labelledby="required-description">*</span> // [!code focus]
   </label>
   <input type="email" id="email" required />
   <!--...-->

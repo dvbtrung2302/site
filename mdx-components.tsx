@@ -1,6 +1,20 @@
-import React, { ComponentPropsWithoutRef } from "react";
+import {
+  Children,
+  ComponentPropsWithoutRef,
+  HtmlHTMLAttributes,
+  ReactElement,
+  createElement,
+  isValidElement,
+} from "react";
 import { Link } from "next-view-transitions";
 import type { MDXComponents } from "mdx/types";
+import { codeToHtml, ShikiTransformer } from "shiki";
+import {
+  transformerNotationHighlight,
+  transformerNotationFocus,
+} from "@shikijs/transformers";
+
+import CopyButton from "./copy-button";
 
 type AnchorProps = ComponentPropsWithoutRef<"a">;
 type HeadingProps = ComponentPropsWithoutRef<"h1">;
@@ -27,7 +41,7 @@ const createHeading = (level: 1 | 2 | 3 | 4 | 5 | 6) => {
   return ({ children, id, ...props }: HeadingProps) => {
     const anchorId = id || String(children).toLowerCase().replace(/\s+/g, "-");
 
-    return React.createElement(
+    return createElement(
       `h${level}`,
       { ...props, className: "blog-heading font-semibold", id: anchorId },
       [
@@ -44,6 +58,68 @@ const createHeading = (level: 1 | 2 | 3 | 4 | 5 | 6) => {
     );
   };
 };
+
+/**
+ * matches and removes leading and trailing whitespace and newlines
+ */
+const whitespaceRegEx = /\s*\n\s*/g;
+
+export const trimWhitespace = (input: string) =>
+  input.replaceAll(whitespaceRegEx, "").trim();
+
+export function transformerEmptyLine(): ShikiTransformer {
+  return {
+    line(node, line) {
+      if (node.children.length === 0 && this.tokens.length !== line) {
+        node.children.push({
+          type: "text",
+          value: " ",
+        });
+      }
+    },
+  };
+}
+
+async function Pre({ children, ...props }: HtmlHTMLAttributes<HTMLPreElement>) {
+  const codeElement = Children.toArray(children).find(
+    (child) => isValidElement(child) && child.type === "code",
+  ) as ReactElement<HTMLPreElement> | undefined;
+
+  const className = codeElement?.props?.className ?? "";
+  const isCodeBlock = className.startsWith("language-");
+
+  if (isCodeBlock) {
+    const lang = className.split(" ")[0]?.split("-")[1] ?? "";
+
+    if (!lang) {
+      return <code {...props}>{children}</code>;
+    }
+
+    const html = await codeToHtml(String(codeElement?.props.children), {
+      lang,
+      themes: {
+        light: "catppuccin-latte",
+        dark: "catppuccin-mocha",
+      },
+      transformers: [
+        transformerNotationHighlight(),
+        transformerNotationFocus(),
+        transformerEmptyLine(),
+      ],
+    });
+
+    return (
+      <div className="custom-code-block relative">
+        <CopyButton content={String(codeElement?.props.children)} />
+        <span className="lang">{lang}</span>
+        <div className={className} dangerouslySetInnerHTML={{ __html: html }} />
+      </div>
+    );
+  }
+
+  // If not, return the component as is
+  return <pre {...props}>{children}</pre>;
+}
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
@@ -91,6 +167,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         </tbody>
       </table>
     ),
+    pre: Pre,
     ...components,
   };
 }
