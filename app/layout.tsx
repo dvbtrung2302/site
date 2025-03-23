@@ -6,19 +6,19 @@ import { ViewTransitions } from "next-view-transitions";
 import { Analytics } from "@vercel/analytics/react";
 
 import { sans } from "./fonts";
+import { SITE_URL } from "./constants";
 import { clx } from "./utils";
 
 import Header from "./header";
 import Footer from "./footer";
-import { SITE_URL } from "./constants";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(`${SITE_URL}`),
+  metadataBase: new URL(SITE_URL),
   alternates: {
     canonical: "/",
     types: {
-      "application/atom+xml": `${SITE_URL}/atom.xml`,
-      "application/rss+xml": `${SITE_URL}/rss.xml`,
+      "application/atom+xml": `${SITE_URL}atom.xml`,
+      "application/rss+xml": `${SITE_URL}rss.xml`,
     },
   },
   title: {
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     siteName: "dvbtrung",
     locale: "en_US",
     type: "website",
-    images: [`${SITE_URL}/og/home`],
+    images: [`${SITE_URL}og/home`],
   },
   robots: {
     index: true,

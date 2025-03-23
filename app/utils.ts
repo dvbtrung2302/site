@@ -35,16 +35,16 @@ export const generateBlogMetadata = ({
   date: string;
   slug: string;
 }) => {
-  const url = `${SITE_URL}/blog/${slug}`;
+  const url = `${SITE_URL}blog/${slug}`;
   const publishedTime = formatDate(date, { month: "long" });
-  const imageUrl = `${SITE_URL}/og/blog?title=${encodeURIComponent(title)}&top=${publishedTime}`;
+  const imageUrl = `${SITE_URL}og/blog/?title=${encodeURIComponent(title)}&top=${publishedTime}`;
 
   return {
     title,
     date: publishedTime,
     description,
     alternates: {
-      canonical: `/blog/${slug}`,
+      canonical: `/blog/${slug}/`,
     },
     openGraph: {
       title,

@@ -9,17 +9,28 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "github.com",
-        port: "",
-      },
-    ],
+        port: ""
+      }
+    ]
   },
+  async redirects() {
+    return [
+      // Redirect /blog/* (no trailing slash) to /blog/*/
+      {
+        source: "/blog/:slug((?!.*\\/|.*\\.).+)",
+        destination: "/blog/:slug/",
+        permanent: true
+      }
+    ];
+  },
+  trailingSlash: true
 };
 
 const withMDX = createMDX({
   options: {
     jsx: true,
-    remarkPlugins: [remarkFrontmatter, remarkMdxFrontmatter],
-  },
+    remarkPlugins: [remarkFrontmatter, remarkMdxFrontmatter]
+  }
 });
 
 export default withMDX(nextConfig);

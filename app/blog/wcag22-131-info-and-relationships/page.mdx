@@ -3,7 +3,9 @@ title: 'Understanding WCAG 2.2 Success Criterion "1.3.1 Info and Relationships"'
 description: 'Learn accessibility best practices for "Info and Relationships"'
 date: 2024-11-03
 ---
+
 import Image from "next/image";
+import BlogJsonLd from "../blog-json-ld";
 import Title from "../title";
 
 import { generateBlogMetadata } from "../../utils";
@@ -20,6 +22,15 @@ export const metadata = generateBlogMetadata({
   date: "2024-11-03",
   slug: "wcag22-131-info-and-relationships"
 })
+
+<BlogJsonLd
+  url={metadata.openGraph.url}
+  title={metadata.title}
+  description={metadata.description}
+  authorName="Trung Dang"
+  publishDate={new Date(metadata.openGraph.publishedTime).toISOString()}
+  imageUrl={metadata.openGraph.images?.[0]?.url}
+/>
 
 <Title title={metadata.title} date={metadata.date} />
 

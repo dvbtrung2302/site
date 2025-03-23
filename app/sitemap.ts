@@ -25,7 +25,7 @@ export default async function sitemap() {
   const slugs = await getNoteSlugs(notesDirectory);
 
   const notes = slugs.map((slug) => ({
-    url: `${SITE_URL}/blog/${slug}`,
+    url: `${SITE_URL}blog/${slug}/`,
     lastModified: new Date().toISOString(),
   }));
 

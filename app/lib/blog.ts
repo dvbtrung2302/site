@@ -8,11 +8,11 @@ type Metadata = {
   date: string;
 };
 
-type FrontmatterParseResult = {
+type FrontMatterParseResult = {
   metadata: Metadata;
 };
 
-export type MDXFileData = FrontmatterParseResult & {
+export type MDXFileData = FrontMatterParseResult & {
   slug: string;
 };
 
@@ -22,7 +22,7 @@ const getMDXDirectories = (dir: string): string[] => {
     .filter((file) => fs.statSync(path.join(dir, file)).isDirectory());
 };
 
-const readMDXFile = (filePath: string): FrontmatterParseResult => {
+const readMDXFile = (filePath: string): FrontMatterParseResult => {
   const rawContent = fs.readFileSync(filePath, "utf-8");
   const { data } = matter(rawContent);
 

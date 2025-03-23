@@ -3,8 +3,12 @@ title: "React Hooks Under The Hood"
 description: "How useState, useEffect work behind the scenes"
 date: 2024-10-26
 ---
+
+
+
 import { generateBlogMetadata } from "../../utils";
-import Title from '../title';
+import BlogJsonLd from "../blog-json-ld";
+import Title from "../title";
 
 export const metadata = generateBlogMetadata({
   title: "React Hooks Under The Hood",
@@ -12,6 +16,15 @@ export const metadata = generateBlogMetadata({
   date: "2024-10-26",
   slug: "react-hook-under-the-hood"
 })
+
+<BlogJsonLd
+  url={metadata.openGraph.url}
+  title={metadata.title}
+  description={metadata.description}
+  authorName="Trung Dang"
+  publishDate={new Date(metadata.openGraph.publishedTime).toISOString()}
+  imageUrl={metadata.openGraph.images?.[0]?.url}
+/>
 
 <Title title={metadata.title} date={metadata.date} />
 

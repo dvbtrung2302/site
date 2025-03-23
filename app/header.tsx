@@ -15,13 +15,13 @@ export default function Header() {
       <span className="relative flex items-center gap-1 italic">
         by
         <Link
-          href="https://github.com/dvbtrung2302"
+          href="https://github.com/dvbtrung2302/"
           target="_blank"
-          rel="noopener noreferrer"
+          rel="noopener noreferrer nofollow"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="https://github.com/dvbtrung2302.png"
+            src="https://github.com/dvbtrung2302.png/"
             loading="eager"
             alt="Trung Dang"
             className="relative mx-1 inline h-8 w-8 rounded-full"

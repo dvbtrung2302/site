@@ -2,8 +2,8 @@ import React from "react";
 import { Link } from "next-view-transitions";
 
 const links = [
-  { name: "linkedin", url: "https://www.linkedin.com/in/dvbtrung" },
-  { name: "github", url: "https://github.com/dvbtrung2302" },
+  { name: "linkedin", url: "https://www.linkedin.com/in/dvbtrung/" },
+  { name: "github", url: "https://github.com/dvbtrung2302/" },
 ];
 
 function UpRightArrowIcon() {
@@ -36,7 +36,7 @@ export default function Footer() {
               key={link.name}
               href={link.url}
               target="_blank"
-              rel="noopener noreferrer"
+              rel="noopener noreferrer nofollow"
               className="flex items-center text-sm transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
             >
               {link.name}
